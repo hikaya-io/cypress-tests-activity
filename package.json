@@ -1,0 +1,10 @@
+{
+    "scripts": {
+        "cypress:open": "cypress open"
+    },
+    "dependencies": {
+        "cypress": "^4.0.4",
+        "jssoup": "0.0.11",
+        "mailslurp-client": "^6.3.0"
+    }
+}
