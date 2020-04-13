@@ -2,6 +2,10 @@
     "baseUrl": "https://activity-staging.hikaya.app",
     "viewportWidth": 1440,
     "viewportHeight": 900,
+    "ignoreTestFiles": [
+        "**/__snapshots__/*",
+        "**/__image_snapshots__/*"
+    ],
     "env": {
         "mailslurp_inbox": "a8f5f756-606d-4553-96c6-71ac6984d9c4"
     }
