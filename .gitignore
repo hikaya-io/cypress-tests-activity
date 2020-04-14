@@ -3,3 +3,5 @@ node_modules
 
 # Cypress video recording
 videos
+# Contains sensitive variables
+cypress.env.json 
