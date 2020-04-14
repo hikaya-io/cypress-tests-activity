@@ -1,5 +1,12 @@
 {
     "baseUrl": "https://activity-staging.hikaya.app",
     "viewportWidth": 1440,
-    "viewportHeight": 900
+    "viewportHeight": 900,
+    "ignoreTestFiles": ["**/__snapshots__/*", "**/__image_snapshots__/*"],
+    "cypress-plugin-snapshots": {
+        "autoCleanUp": true,
+        "imageConfig": {
+            "threshold": 0.05
+        }
+    }
 }

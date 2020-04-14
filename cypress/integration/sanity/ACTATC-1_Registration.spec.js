@@ -17,6 +17,8 @@ context("Registration", () => {
 
         cy.visit("/accounts/register/user/none/");
         cy.contains("Create an account").should("exist");
+        // Visual test of the register page
+        cy.get("body").toMatchImageSnapshot();
 
         cy.get("#register_first_name")
             .type(data.f_new)
@@ -48,6 +50,7 @@ context("Registration", () => {
             "contain",
             "Proceed to your email account to confirm your email address to activate your account"
         );
+        cy.get("body").toMatchImageSnapshot();
 
         // Check that user cannot login without activated account
         cy.get(".form-group > .btn").click();
@@ -56,6 +59,9 @@ context("Registration", () => {
             "contain",
             "Please verify your email address then try again."
         );
+        cy.get(
+            ".activity-content #alerts .alert-danger"
+        ).toMatchImageSnapshot();
 
         cy.getLinkFromEmail(
             "Please confirm your email address",
@@ -98,6 +104,7 @@ context("Registration", () => {
         cy.loginByCSRF(data.un_new, data.pw_new);
         cy.visit("/accounts/register/organization");
         cy.contains("Create an Organization");
+        cy.get("body").toMatchImageSnapshot();
 
         cy.get("#org_name")
             .type("The New Aid Organization")
@@ -128,5 +135,10 @@ context("Registration", () => {
             "contain",
             "The New Aid Organization"
         );
+
+        // Visual test of the dropdown menu
+        cy.get(
+            ".navbar-right > .dropdown > .dropdown-menu"
+        ).toMatchImageSnapshot();
     });
 });

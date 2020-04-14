@@ -56,6 +56,7 @@ context("Registration", () => {
 
         cy.get("[data-target='#addProgramModal'").click();
         cy.get("#addProgramModal").should("be.visible");
+        cy.get("#addProgramModal").toMatchImageSnapshot();
         cy.get("#addProgramModalLabel").should("contain", "Add Programs");
 
         cy.get("#programName")
