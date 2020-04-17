@@ -1,5 +1,5 @@
 {
-    "baseUrl": "https://activity-staging.hikaya.app",
+    "baseUrl": "https://activity-staging.hikaya.dev",
     "viewportWidth": 1440,
     "viewportHeight": 900,
     "ignoreTestFiles": ["**/__snapshots__/*", "**/__image_snapshots__/*"],

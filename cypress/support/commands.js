@@ -61,8 +61,12 @@ Cypress.Commands.add("login", (email, password) => {
 
 Cypress.Commands.add("enterLoginDetails", (email, password) => {
     cy.visit("/accounts/login");
-    cy.get("#login_username").type(email).should("have.value", email);
-    cy.get("#login_password").type(password).should("have.value", password);
+    cy.get("#login_username")
+        .type(email)
+        .should("have.value", email);
+    cy.get("#login_password")
+        .type(password)
+        .should("have.value", password);
     cy.get("#login_submit_btn").click();
 });
 
@@ -92,6 +96,7 @@ Cypress.Commands.add("loginByCSRF", (username, password) => {
     });
 });
 
+///////////////////////////////////////// Custom Django admin API commands /////////////////////////////////////////
 // Login into django Admin using CSRF Tokens
 Cypress.Commands.add(
     "loginAdmin",
@@ -116,6 +121,13 @@ Cypress.Commands.add(
                 },
             }).then((res) => {
                 expect(res.status).to.eq(200);
+                cy.request("/admin/authtoken/token/").then((res) => {
+                    window.csrfToken = res.headers["set-cookie"][0]
+                        .split(" ")[0]
+                        .split("=")[1]
+                        .split(";")[0];
+                    console.log(window.csrfToken);
+                });
             });
         });
     }
@@ -133,18 +145,13 @@ Cypress.Commands.add("addUser", (username, password, email) => {
             .find(`a:contains('${username}')`)
             .attr("href");
         if (!link) {
-            const csrfToken = res.headers["set-cookie"][0]
-                .split(" ")[0]
-                .split("=")[1]
-                .split(";")[0];
-
             cy.request({
                 method: "POST",
                 url: "/admin/auth/user/add/",
                 failOnStatusCode: false,
                 form: true,
                 body: {
-                    csrfmiddlewaretoken: csrfToken,
+                    csrfmiddlewaretoken: window.csrfToken,
                     username: username,
                     email: email,
                     password1: password,
@@ -161,10 +168,6 @@ Cypress.Commands.add("addUser", (username, password, email) => {
                     `The user "${username}" was added successfully. You may edit it again below.`
                 );
 
-                const csrfToken = res.headers["set-cookie"][0]
-                    .split(" ")[0]
-                    .split("=")[1]
-                    .split(";")[0];
                 const userId = Cypress.$(res.body)
                     .find(`a:contains('${username}')`)
                     .attr("href")
@@ -176,7 +179,7 @@ Cypress.Commands.add("addUser", (username, password, email) => {
                     failOnStatusCode: false,
                     form: true,
                     body: {
-                        csrfmiddlewaretoken: csrfToken,
+                        csrfmiddlewaretoken: window.csrfToken,
                         user: userId,
                         _save: "Save",
                     },
@@ -203,10 +206,6 @@ Cypress.Commands.add("updateUser", (fName, lName) => {
     cy.request("/admin/auth/user/").then((res) => {
         const $html = Cypress.$(res.body);
         const link = $html.find("a:contains('gfxffg')").attr("href");
-        const csrfToken = res.headers["set-cookie"][0]
-            .split(" ")[0]
-            .split("=")[1]
-            .split(";")[0];
 
         cy.request({
             method: "POST",
@@ -214,7 +213,7 @@ Cypress.Commands.add("updateUser", (fName, lName) => {
             failOnStatusCode: false,
             form: true,
             body: {
-                csrfmiddlewaretoken: csrfToken,
+                csrfmiddlewaretoken: window.csrfToken,
                 first_name: "testXXX",
                 last_name: "GGXXX",
                 _save: "Save",
@@ -238,10 +237,6 @@ Cypress.Commands.add("deleteUser", (username) => {
 
         if (link) {
             const id = link.split("/")[4];
-            const csrfToken = res.headers["set-cookie"][0]
-                .split(" ")[0]
-                .split("=")[1]
-                .split(";")[0];
 
             cy.request({
                 method: "POST",
@@ -249,7 +244,8 @@ Cypress.Commands.add("deleteUser", (username) => {
                 failOnStatusCode: false,
                 form: true,
                 body: {
-                    csrfmiddlewaretoken: csrfToken,
+                    csrfmiddlewaretoken: window.csrfToken,
+                    _selected_action: id,
                     _selected_action: id,
                     action: "delete_selected",
                     post: "yes",
@@ -267,4 +263,48 @@ Cypress.Commands.add("deleteUser", (username) => {
             console.log(`Username ${username} does not exists.`);
         }
     });
+});
+
+// Delete a program(s) using django admin
+Cypress.Commands.add("deleteProgram", (programs) => {
+    cy.loginAdmin();
+    cy.request("admin/workflow/program/")
+        .its("body")
+        .then((body) => {
+            programs.forEach((program) => {
+                const test = Cypress.$(body).find(`td:contains('${program}')`);
+                test.each((index, value) => {
+                    if (value.textContent === program) {
+                        id =
+                            value.previousElementSibling.previousElementSibling
+                                .textContent;
+                        cy.request({
+                            method: "POST",
+                            url: "/admin/workflow/program/",
+                            failOnStatusCode: false,
+                            form: true,
+                            body: {
+                                csrfmiddlewaretoken: window.csrfToken,
+                                _selected_action: id,
+                                action: "delete_selected",
+                                post: "yes",
+                            },
+                            headers: {
+                                Referer: Cypress.config().baseUrl,
+                            },
+                        }).then((res) => {
+                            expect(res.status).to.eq(200);
+                            const $html = Cypress.$(res.body);
+                            const success = $html
+                                .find("li[class='success']")
+                                .text();
+                            expect(success).to.eq(
+                                "Successfully deleted 1 program."
+                            );
+                        });
+                    }
+                });
+            });
+        });
+    cy.logoutAdmin();
 });

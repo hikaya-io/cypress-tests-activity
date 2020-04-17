@@ -4,7 +4,7 @@ context("Registration", () => {
     let data;
 
     before(() => {
-        cy.fixture("test_data.json").then((test_data) => {
+        cy.fixture("test_data.json").then(test_data => {
             data = test_data;
         });
     });
@@ -67,7 +67,7 @@ context("Registration", () => {
             "Please confirm your email address",
             "Confirm email",
             0
-        ).then((link) => {
+        ).then(link => {
             cy.visit(link);
             cy.get(".alert").should(
                 "contain",
@@ -83,7 +83,7 @@ context("Registration", () => {
             "Welcome to Activity",
             "Log in to Activity",
             1
-        ).then((link) => {
+        ).then(link => {
             expect(link).to.eq(Cypress.config().baseUrl + "/accounts/login/");
             cy.loginByCSRF(data.un_new, data.pw_new);
             cy.visit("/accounts/register/organization");

@@ -4,7 +4,10 @@
     "un_new": "newtatafire",
     "pw_new": "StrongPass1@",
     "email_new": "@mailslurp.com",
-    "new_program": "Cy Program",
+
+    "new_program": "Cy-New Program",
+    "new_program_desc": "A test project run by the Cypress",
+
     "sector_agr": "Agriculture",
     "sector_CCCM": "Camp Coordination and Camp Management",
     "sector_CVA": "Cash and Voucher Assistance",
