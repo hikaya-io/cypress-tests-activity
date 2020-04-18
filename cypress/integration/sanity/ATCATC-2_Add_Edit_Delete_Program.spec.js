@@ -1,6 +1,6 @@
 /// <reference types="Cypress" />
 
-context("Registration", () => {
+context("Program creation, update and delition", () => {
     let data;
     let env;
 
