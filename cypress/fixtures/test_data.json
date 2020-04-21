@@ -1,3 +1,19 @@
 {
+    "f_new": "Nick",
+    "l_new": "Tata",
+    "un_new": "newtatafire",
+    "pw_new": "StrongPass1@",
+    "email_new": "@mailslurp.com",
+
+    "new_program": "Cy-New Program",
+    "new_program_desc": "A test project run by the Cypress",
+
+    "sector_agr": "Agriculture",
+    "sector_CCCM": "Camp Coordination and Camp Management",
+    "sector_CVA": "Cash and Voucher Assistance",
+    "sector_DRR": "Disaster Risk Reduction",
+    "sector_ER": "Early Recovery",
+    "sector_Education": "Education",
+    "sector_ET": "Emergency Telecommunications",
     "mailslurp_inbox_id": "a8f5f756"
 }

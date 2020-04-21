@@ -1,13 +1,9 @@
 /// <reference types="Cypress" />
 
 context("Registration", () => {
-    let users;
     let data;
 
     before(() => {
-        cy.fixture("test_users").then(test_users => {
-            users = test_users;
-        });
         cy.fixture("test_data.json").then(test_data => {
             data = test_data;
         });
@@ -15,30 +11,30 @@ context("Registration", () => {
 
     it("ACTATC-1.1 Register a New User", () => {
         cy.clearInbox();
-        cy.loginAdmin(users.un_admin, users.pw_admin);
-        cy.deleteUser(users.un_new);
+        cy.loginAdmin();
+        cy.deleteUser(data.un_new);
         cy.logoutAdmin();
 
         cy.visit("/accounts/register/user/none/");
         cy.contains("Create an account").should("exist");
         // Visual test of the register page
-        cy.get('body').toMatchImageSnapshot()
+        cy.get("body").toMatchImageSnapshot();
 
         cy.get("#register_first_name")
-            .type(users.f_new)
-            .should("have.value", users.f_new);
+            .type(data.f_new)
+            .should("have.value", data.f_new);
         cy.get("#register_last_name")
-            .type(users.l_new)
-            .should("have.value", users.l_new);
+            .type(data.l_new)
+            .should("have.value", data.l_new);
         cy.get("#register_username")
-            .type(users.un_new)
-            .should("have.value", users.un_new);
+            .type(data.un_new)
+            .should("have.value", data.un_new);
         cy.get("#register_password")
-            .type(users.pw_new)
-            .should("have.value", users.pw_new);
+            .type(data.pw_new)
+            .should("have.value", data.pw_new);
         cy.get("#register_confirm_password")
-            .type(users.pw_new)
-            .should("have.value", users.pw_new);
+            .type(data.pw_new)
+            .should("have.value", data.pw_new);
         cy.get("#register_submit_btn").should("be.disabled");
         cy.get("#register_email_address")
             .type(Cypress.env("mailslurp_inbox") + "@mailslurp.com")
@@ -54,16 +50,18 @@ context("Registration", () => {
             "contain",
             "Proceed to your email account to confirm your email address to activate your account"
         );
-        cy.get('body').toMatchImageSnapshot()
+        cy.get("body").toMatchImageSnapshot();
 
         // Check that user cannot login without activated account
         cy.get(".form-group > .btn").click();
-        cy.enterLoginDetails(users.un_new, users.pw_new);
+        cy.enterLoginDetails(data.un_new, data.pw_new);
         cy.get(".alert").should(
             "contain",
             "Please verify your email address then try again."
         );
-        cy.get('.activity-content #alerts .alert-danger').toMatchImageSnapshot()
+        cy.get(
+            ".activity-content #alerts .alert-danger"
+        ).toMatchImageSnapshot();
 
         cy.getLinkFromEmail(
             "Please confirm your email address",
@@ -87,26 +85,26 @@ context("Registration", () => {
             1
         ).then(link => {
             expect(link).to.eq(Cypress.config().baseUrl + "/accounts/login/");
-            cy.loginByCSRF(users.un_new, users.pw_new);
+            cy.loginByCSRF(data.un_new, data.pw_new);
             cy.visit("/accounts/register/organization");
             cy.contains("Create an Organization");
         });
     });
 
     it("ACTATC-1.2 Create a New Organization", () => {
-        cy.loginAdmin(users.un_admin, users.pw_admin);
-        cy.deleteUser(users.un_new);
+        cy.loginAdmin();
+        cy.deleteUser(data.un_new);
         cy.addUser(
-            users.un_new,
-            users.pw_new,
+            data.un_new,
+            data.pw_new,
             Cypress.env("mailslurp_inbox") + "@mailslurp.com"
         );
         cy.logoutAdmin();
 
-        cy.loginByCSRF(users.un_new, users.pw_new);
+        cy.loginByCSRF(data.un_new, data.pw_new);
         cy.visit("/accounts/register/organization");
         cy.contains("Create an Organization");
-        cy.get('body').toMatchImageSnapshot()
+        cy.get("body").toMatchImageSnapshot();
 
         cy.get("#org_name")
             .type("The New Aid Organization")
@@ -139,6 +137,8 @@ context("Registration", () => {
         );
 
         // Visual test of the dropdown menu
-        cy.get('.navbar-right > .dropdown > .dropdown-menu').toMatchImageSnapshot()
+        cy.get(
+            ".navbar-right > .dropdown > .dropdown-menu"
+        ).toMatchImageSnapshot();
     });
 });
