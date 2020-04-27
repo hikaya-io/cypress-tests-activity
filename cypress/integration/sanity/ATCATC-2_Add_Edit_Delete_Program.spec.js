@@ -1,6 +1,6 @@
 /// <reference types="Cypress" />
 
-context("Program creation, update and delition", () => {
+context("Program creation, update and deletion", () => {
     let data;
     let env;
 
@@ -60,13 +60,14 @@ context("Program creation, update and delition", () => {
     });
 
     it("ACTATC-2.1 Adds a New Program", () => {
-        cy.deleteProgram([data.new_program, data.new_program + " 01"]);
+        let program = data.new_program.name;
+        cy.apiDeleteProgram([program, program + " 01"]);
 
-        cy.loginByCSRF(env.un_qa_org, env.pw_qa_org);
+        cy.apiLogin(env.un_qa_org, env.pw_qa_org);
 
         cy.visit("/");
         cy.get(".dropdown")
-            .contains("Workflow")
+            .contains("Workflows")
             .click()
             .then(() => {
                 cy.get("a")
@@ -75,22 +76,22 @@ context("Program creation, update and delition", () => {
                 cy.get(".page-title").should("contain", "Programs List");
             });
         cy.get("#show-modal").click();
-        enterProgramDetails(data.new_program, data.sector_DRR);
+        enterProgramDetails(program, data.sector_DRR);
 
         cy.get(".btn-close").click();
         cy.get("#level_1_list")
-            .find(`a[title='${data.new_program}']`)
+            .find(`a[title='${program}']`)
             .should("not.exist");
 
         cy.get("#show-modal").click();
-        enterProgramDetails(data.new_program, data.sector_DRR);
+        enterProgramDetails(program, data.sector_DRR);
         cy.get(".btn-outline-success").click();
         cy.get(".toast-message").should(
             "have.text",
             "Programs successfully saved"
         );
 
-        enterProgramDetails(data.new_program + " 01", data.sector_DRR);
+        enterProgramDetails(program + " 01", data.sector_DRR);
         cy.get(".btn-success").click();
         cy.get(".toast-message").should(
             "have.text",
@@ -98,58 +99,49 @@ context("Program creation, update and delition", () => {
         );
 
         cy.get("#level_1_list")
-            .find(`a[title='${data.new_program}']`)
+            .find(`a[title='${program}']`)
             .should("exist");
         cy.get("#level_1_list")
-            .find(`a[title='${data.new_program + " 01"}']`)
+            .find(`a[title='${program + " 01"}']`)
             .should("exist");
     });
 
-    it("ACTATC-2.2 Edit a New Program", () => {
-        const program_name = data.new_program + " Edit";
-        cy.deleteProgram([program_name]);
+    it("ACTATC-2.2 Edits a Program", () => {
+        let program = data.new_program;
+        program.sector = 1;
+        program.organization = 1;
 
-        cy.loginByCSRF(env.un_qa_org, env.pw_qa_org);
+        cy.apiDeleteProgram([program.name]);
+        cy.apiAddProgram(program);
+
+        cy.apiLogin(env.un_qa_org, env.pw_qa_org);
 
         cy.visit("/workflow/level1_list");
-        cy.get(".page-title").should("contain", "Programs List");
 
-        cy.get("#show-modal").click();
-        enterProgramDetails(program_name, data.sector_ET);
-
-        cy.get(".btn-success").click();
-        cy.get(".toast-message").should(
-            "have.text",
-            "Programs successfully saved"
-        );
-
-        cy.get("#level_1_list")
-            .find(`a[title='${program_name}']`)
-            .should("exist");
-
-        cy.get("a")
-            .contains(program_name)
+        cy.get("#level1Table")
+            .find("a")
+            .contains(program.name)
             .click();
 
-        cy.get(".page-title").should("contain", program_name);
-        cy.get("#id_description").type(data.new_program_desc);
+        cy.get(".page-title").should("contain", program.name);
+        cy.get("#id_description").type(" new desc");
         cy.get("a")
             .contains("Cancel")
             .click();
 
         cy.get(".page-title").should("contain", "Programs List");
         cy.get("#level_1_list")
-            .find(`a[title='${program_name}']`)
+            .find(`a[title='${program.name}']`)
             .should("exist");
 
         cy.get("#level_1_list")
-            .find(`a[title='${program_name}']`)
+            .find(`a[title='${program.name}']`)
             .parent()
             .siblings(".text-right")
             .find(".dropdown-toggle")
             .click();
         cy.get("#level_1_list")
-            .find(`a[title='${program_name}']`)
+            .find(`a[title='${program.name}']`)
             .parent()
             .siblings(".text-right")
             .find(".dropdown-menu")
@@ -157,25 +149,25 @@ context("Program creation, update and delition", () => {
             .contains("Edit")
             .click();
 
-        cy.get(".page-title").should("contain", program_name);
-        cy.get("#id_description").should("be.empty");
-        cy.get("#id_description").type(data.new_program_desc);
+        cy.get(".page-title").should("contain", program.name);
+        cy.get("#id_description").should("have.value", program.description);
+        cy.get("#id_description").type(" new desc");
 
         cy.get(".text-right > .btn-success").click();
 
         cy.get(".page-title").should("contain", "Programs List");
         cy.get("#level_1_list")
-            .find(`a[title='${program_name}']`)
+            .find(`a[title='${program.name}']`)
             .should("exist");
 
         cy.get("#level_1_list")
-            .find(`a[title='${program_name}']`)
+            .find(`a[title='${program.name}']`)
             .parent()
             .siblings(".text-right")
             .find(".dropdown-toggle")
             .click();
         cy.get("#level_1_list")
-            .find(`a[title='${program_name}']`)
+            .find(`a[title='${program.name}']`)
             .parent()
             .siblings(".text-right")
             .find(".dropdown-menu")
@@ -183,41 +175,39 @@ context("Program creation, update and delition", () => {
             .contains("Edit")
             .click();
 
-        cy.get(".page-title").should("contain", program_name);
-        cy.get("#id_description").should("have.value", data.new_program_desc);
+        cy.get(".page-title").should("contain", program.name);
+        cy.get("#id_description").should(
+            "have.value",
+            `${program.description} new desc`
+        );
     });
 
-    it("ACTATC-2.3 Delete a New Program", () => {
-        const program_name = data.new_program + " Delete";
-        cy.deleteProgram([program_name]);
+    it("ACTATC-2.3 Deletes a Program", () => {
+        let program = data.new_program;
+        program.sector = 1;
+        program.organization = 1;
 
-        cy.loginByCSRF(env.un_qa_org, env.pw_qa_org);
+        cy.apiDeleteProgram([program.name]);
+        cy.apiAddProgram(program);
+
+        cy.apiLogin(env.un_qa_org, env.pw_qa_org);
 
         cy.visit("/workflow/level1_list");
         cy.get(".page-title").should("contain", "Programs List");
 
-        cy.get("#show-modal").click();
-        enterProgramDetails(program_name, data.sector_Education);
-
-        cy.get(".btn-success").click();
-        cy.get(".toast-message").should(
-            "have.text",
-            "Programs successfully saved"
-        );
-
         cy.get("#level_1_list")
-            .find(`a[title='${program_name}']`)
+            .find(`a[title='${program.name}']`)
             .should("exist");
 
         cy.get("#level_1_list")
-            .find(`a[title='${program_name}']`)
+            .find(`a[title='${program.name}']`)
             .parent()
             .siblings(".text-right")
             .find(".dropdown-toggle")
             .click();
         cy.get("#level_1_list")
-            .find(`a[title='${program_name}']`)
-            .parent()
+            .find(`a[title='${program.name}']`)
+            .parent("td")
             .siblings(".text-right")
             .find(".dropdown-menu")
             .find("li > a")
@@ -225,20 +215,20 @@ context("Program creation, update and delition", () => {
             .click();
 
         cy.get(".modal-header").should("contain", "Confirm delete");
-        cy.contains(`Are you sure you want to delete ${program_name}?`).should(
+        cy.contains(`Are you sure you want to delete ${program.name}?`).should(
             "exist"
         );
 
         cy.get(".btn-close").click();
 
         cy.get("#level_1_list")
-            .find(`a[title='${program_name}']`)
-            .parent()
+            .find(`a[title='${program.name}']`)
+            .parent("td")
             .siblings(".text-right")
             .find(".dropdown-toggle")
             .click();
         cy.get("#level_1_list")
-            .find(`a[title='${program_name}']`)
+            .find(`a[title='${program.name}']`)
             .parent()
             .siblings(".text-right")
             .find(".dropdown-menu")
@@ -247,7 +237,7 @@ context("Program creation, update and delition", () => {
             .click();
 
         cy.get(".modal-header").should("contain", "Confirm delete");
-        cy.contains(`Are you sure you want to delete ${program_name}?`).should(
+        cy.contains(`Are you sure you want to delete ${program.name}?`).should(
             "exist"
         );
 
@@ -261,7 +251,7 @@ context("Program creation, update and delition", () => {
         );
 
         cy.get("#level_1_list")
-            .find(`a[title='${program_name}']`)
+            .find(`a[title='${program.name}']`)
             .should("not.exist");
     });
 });

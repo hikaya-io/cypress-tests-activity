@@ -4,21 +4,22 @@ context("Registration", () => {
     let data;
 
     before(() => {
-        cy.fixture("test_data.json").then(test_data => {
+        cy.fixture("test_data.json").then((test_data) => {
             data = test_data;
         });
     });
 
     it("ACTATC-1.1 Register a New User", () => {
         cy.clearInbox();
-        cy.loginAdmin();
-        cy.deleteUser(data.un_new);
-        cy.logoutAdmin();
+        cy.apiLogin(env.un_qa_org, env.pw_qa_org);
+        cy.apiDeleteUser(data.un_new);
+        cy.apiLogoutAdmin();
 
         cy.visit("/accounts/register/user/none/");
         cy.contains("Create an account").should("exist");
         // Visual test of the register page
-        cy.get("body").toMatchImageSnapshot();
+        //  https://github.com/cypress-io/cypress/issues/3090
+        // cy.get("body").toMatchImageSnapshot();
 
         cy.get("#register_first_name")
             .type(data.f_new)
@@ -50,7 +51,7 @@ context("Registration", () => {
             "contain",
             "Proceed to your email account to confirm your email address to activate your account"
         );
-        cy.get("body").toMatchImageSnapshot();
+        // cy.get("body").toMatchImageSnapshot();
 
         // Check that user cannot login without activated account
         cy.get(".form-group > .btn").click();
@@ -59,15 +60,15 @@ context("Registration", () => {
             "contain",
             "Please verify your email address then try again."
         );
-        cy.get(
-            ".activity-content #alerts .alert-danger"
-        ).toMatchImageSnapshot();
+        // cy.get(
+        //     ".activity-content #alerts .alert-danger"
+        // ).toMatchImageSnapshot();
 
         cy.getLinkFromEmail(
             "Please confirm your email address",
             "Confirm email",
             0
-        ).then(link => {
+        ).then((link) => {
             cy.visit(link);
             cy.get(".alert").should(
                 "contain",
@@ -83,28 +84,28 @@ context("Registration", () => {
             "Welcome to Activity",
             "Log in to Activity",
             1
-        ).then(link => {
+        ).then((link) => {
             expect(link).to.eq(Cypress.config().baseUrl + "/accounts/login/");
-            cy.loginByCSRF(data.un_new, data.pw_new);
+            cy.apiLogin(data.un_new, data.pw_new);
             cy.visit("/accounts/register/organization");
             cy.contains("Create an Organization");
         });
     });
 
     it("ACTATC-1.2 Create a New Organization", () => {
-        cy.loginAdmin();
-        cy.deleteUser(data.un_new);
-        cy.addUser(
+        cy.apiLogin(env.un_qa_org, env.pw_qa_org);
+        cy.apiDeleteUser(data.un_new);
+        cy.apiAddUser(
             data.un_new,
             data.pw_new,
             Cypress.env("mailslurp_inbox") + "@mailslurp.com"
         );
-        cy.logoutAdmin();
+        cy.apiLogoutAdmin();
 
-        cy.loginByCSRF(data.un_new, data.pw_new);
+        cy.apiLogin(data.un_new, data.pw_new);
         cy.visit("/accounts/register/organization");
         cy.contains("Create an Organization");
-        cy.get("body").toMatchImageSnapshot();
+        // cy.get("body").toMatchImageSnapshot();
 
         cy.get("#org_name")
             .type("The New Aid Organization")
@@ -137,8 +138,8 @@ context("Registration", () => {
         );
 
         // Visual test of the dropdown menu
-        cy.get(
-            ".navbar-right > .dropdown > .dropdown-menu"
-        ).toMatchImageSnapshot();
+        // cy.get(
+        //     ".navbar-right > .dropdown > .dropdown-menu"
+        // ).toMatchImageSnapshot();
     });
 });
