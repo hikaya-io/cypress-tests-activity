@@ -2,6 +2,7 @@
     "baseUrl": "https://activity-staging.hikaya.dev",
     "viewportWidth": 1440,
     "viewportHeight": 900,
+    "defaultCommandTimeout": 10000,
     "ignoreTestFiles": ["**/__snapshots__/*", "**/__image_snapshots__/*"],
     "cypress-plugin-snapshots": {
         "autoCleanUp": true,

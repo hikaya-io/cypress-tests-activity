@@ -1,4 +1,4 @@
-# Activty Cypress E2E Test
+# Activity Cypress E2E Test
 
 This repo contains [**Activity**](https://github.com/hikaya-io/activity) automated test cases written in [Cypress](https://www.cypress.io/).
 

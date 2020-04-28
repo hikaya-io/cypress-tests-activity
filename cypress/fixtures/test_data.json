@@ -4,9 +4,19 @@
     "un_new": "newtatafire",
     "pw_new": "StrongPass1@",
     "email_new": "@mailslurp.com",
+    "main_org": "",
+    "main_program": "Flattening the pandemic curve in the worst affected locations",
 
-    "new_program": "Cy-New Program",
-    "new_program_desc": "A test project run by the Cypress",
+    "new_program": {
+        "name": "Cy New Program",
+        "description": "A test program used for automation on Cypress"
+    },
+    "new_project": {
+        "name": "Cy New Project"
+    },
+    "new_indicator": {
+        "name": "Cy New Indicator"
+    },
 
     "sector_agr": "Agriculture",
     "sector_CCCM": "Camp Coordination and Camp Management",
