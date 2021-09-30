@@ -9,5 +9,6 @@
         "imageConfig": {
             "threshold": 0.05
         }
-    }
+    },
+    "api_key_mailslurp": "fake-key"
 }
