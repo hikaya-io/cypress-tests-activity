@@ -1,5 +1,5 @@
 {
-    "baseUrl": "https://activity-staging.hikaya.dev",
+    "baseUrl": "https://activity.hikaya.dev",
     "viewportWidth": 1440,
     "viewportHeight": 900,
     "defaultCommandTimeout": 10000,
