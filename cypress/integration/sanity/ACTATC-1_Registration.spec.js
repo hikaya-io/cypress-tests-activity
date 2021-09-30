@@ -2,11 +2,13 @@
 
 context("Registration", () => {
     let data;
+    let env;
 
     before(() => {
         cy.fixture("test_data.json").then((test_data) => {
             data = test_data;
         });
+        env = Cypress.env();
     });
 
     it("ACTATC-1.1 Register a New User", () => {
