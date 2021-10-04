@@ -35,6 +35,8 @@ The envirom variables file `cypress.env.json` has not been commited. You can cre
 {
     "un_qa_org": "",          # username for a user with django admin access
     "pw_qa_org": "",          # password for a user with django admin access
+    "fn_qa_org": "",          # First Name for a user with django admin access
+    "ln_qa_org": "",          # Last Name or a user with django admin access
     "api_key_mailslurp": "",  # [Mailslurp](https://www.mailslurp.com/) api key
     "mailslurp_inbox": ""     # Mailslurp inbox id
 }
